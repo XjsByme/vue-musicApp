@@ -1,7 +1,7 @@
 <template>
   <div class="my-singer-detail">
     <!-- MyMusicList 组件 -->
-    <MyMusicList></MyMusicList>
+    <MyMusicList :songs="songs" :title="title" :bg-image="bgImage"></MyMusicList>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -19,7 +19,7 @@ import MyMusicList from 'components/MyMusicList/MyMusicList'
 export default{
   data(){
     return {
-      songs:''
+      songs:[]
     }
   },
   components:{
@@ -29,7 +29,15 @@ export default{
     //歌手列表数据，store中使用引用的
 		...mapGetters([
 			'singer'
-		])
+		]),
+    // 传入子组件
+    title() {
+      return this.singer.name
+    },
+    // 传入子组件
+    bgImage() {
+      return this.singer.avatar
+    }
 	},
   methods:{
     _getSingerDetail(){
@@ -44,7 +52,7 @@ export default{
         if (res.code === ERR_OK) {
           // console.log('res.data.list',res.data.list)
           this.songs = this._formatSongs(res.data.list)
-          console.log(this.songs)
+          // console.log(this.songs)
         }
       })
     },
