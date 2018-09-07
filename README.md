@@ -1,4 +1,4 @@
-# vue-music-demo -音乐APP
+# vue-music-demo -音乐APP-玩一玩
 
 > A Vue.js project
 
