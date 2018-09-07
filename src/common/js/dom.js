@@ -29,7 +29,9 @@ export function getData(el, name, val) {
   //取值
   return el.getAttribute(prefix + name)
 }
-
+/**
+*浏览器兼容写法封装
+*/
 let elementStyle = document.createElement('div').style
 
 let vendor = (() => {

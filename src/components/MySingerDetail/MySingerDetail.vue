@@ -1,8 +1,9 @@
 <template>
-  <div class="my-singer-detail">
+  <!-- 动画 -->
+  <transition name="slide">
     <!-- MyMusicList 组件 -->
     <MyMusicList :songs="songs" :title="title" :bg-image="bgImage"></MyMusicList>
-  </div>
+ </transition>
 </template>
 <script type="text/ecmascript-6">
 //拿到已经设置的 singer 
@@ -82,12 +83,18 @@ export default{
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
-.my-singer-detail
-  position: fixed;
-  z-index: 100;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: $color-background;
+// .my-singer-detail
+//   position: fixed;
+//   z-index: 100;
+//   top: 0;
+//   left: 0;
+//   right: 0;
+//   bottom: 0;
+//   background: $color-background;
+//
+.slide-enter-active, .slide-leave-active
+    transition: all 0.3s
+
+.slide-enter, .slide-leave-to
+    transform: translate3d(100%, 0, 0)
 </style>
