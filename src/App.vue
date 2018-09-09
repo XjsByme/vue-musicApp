@@ -6,6 +6,8 @@
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
+    <!-- 应用播放器-切换路由也不影响它的播放 -->
+    <Myplayer></Myplayer>
   </div>
 </template>
 
@@ -14,10 +16,13 @@
 // import MyHeader from '@/components/MyHeader/MyHeader'
 import MyHeader from './components/MyHeader/MyHeader'
 import MyTab from '@/components/MyTab/MyTab'
+//Myplayer 引用
+import Myplayer from '@/components/Myplayer/Myplayer'
 export default {
   components: {
     MyHeader,
-    MyTab
+    MyTab,
+    Myplayer
   }
 }
 </script>

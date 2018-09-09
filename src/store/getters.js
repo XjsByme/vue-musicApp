@@ -2,9 +2,15 @@
 // const singer = function (state){
 	//return state.singer
 //}
-export const singer = state => state.singer
+export const singer = state => { 
+	return state.singer
+}
 
-export const playing = state => state.playing  // 播放列表
+// export const playing = state => state.playing  // 播放列表
+
+export const playing = state => {
+	return state.playing
+}
 
 export const fullScreen = state => state.fullScreen
 

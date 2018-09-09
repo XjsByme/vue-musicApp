@@ -26,7 +26,8 @@
     <!-- :listenScroll="listenScroll" :probeType="probeType" 传给 scroll组件 -->
     <MyScroll class="list" :data="songs" ref="list" :listenScroll="listenScroll" :probeType="probeType" @scrollFun="scroll">
       <div class="song-list-wrapper">
-        <MySongList :songs="songs"></MySongList>
+        <!-- selectItem 事件派发 -->
+        <MySongList :songs="songs" @select="selectItem"></MySongList>
       </div>
       <!-- loding -->
       <div v-show="!songs.length" class="loading-container">
@@ -44,6 +45,8 @@ import {prefixStyle} from 'common/js/dom'
 const RESERVED_HEIGHT = 40 //title高度40
 const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
+//mapActions引入
+import {mapActions} from 'vuex'
 
 export default{
   components:{
@@ -102,6 +105,16 @@ export default{
       //设置scrollY
       // console.log('pos',pos)
       this.scrollY = pos.y
+    },
+    ...mapActions([
+      'selectPlay',//引用actions中的selectPlay方法
+    ]),
+    selectItem(item,index){
+      //selectPlay 是 mapActions（store中actions中的方法）,把songs 和 index 传过去
+      this.selectPlay({
+        list: this.songs,
+        index
+      })
     }
   },
   //监听变化
