@@ -16,6 +16,7 @@ const multations = {
             state.playing = flag
         },
         [types.SET_FULL_SCREEN](state, flag) {
+            // console.log(state,flag)
             state.fullScreen = flag
         },
         [types.SET_PLAYLIST](state, list) {

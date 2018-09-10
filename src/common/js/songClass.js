@@ -15,6 +15,7 @@ export default class Song {
 }
 //拓展song类工厂方法-在这里new Song, 避免在组件中写很多
 export function CreatSong(musicData){
+	// console.log('musicData',musicData)
 	return new Song({
 		id: musicData.songid,
 		mid: musicData.songmid,
@@ -23,7 +24,10 @@ export function CreatSong(musicData){
 	    album: musicData.albumname,
 	    duration: musicData.interval,
 	    image: `https://y.gtimg.cn/music/photo_new/T002R300x300M000${musicData.albummid}.jpg?max_age=2592000`,
-    	url: `http://ws.stream.qqmusic.qq.com/${musicData.songid}.m4a?fromtag=46`
+    	//url: `http://ws.stream.qqmusic.qq.com/${musicData.songid}.m4a?fromtag=46`
+    	// url:'//ws.stream.qqmusic.qq.com/C100000QCwge3B6Ad1.m4a?fromtag=0&guid=126548448'
+    	//http://ws.stream.qqmusic.qq.com/C100'+songmid+'.m4a?fromtag=0&guid=126548448
+    	url:`http://ws.stream.qqmusic.qq.com/C100${musicData.songmid}.m4a?fromtag=0&guid=126548448`//播放地址
 	})
 }
 

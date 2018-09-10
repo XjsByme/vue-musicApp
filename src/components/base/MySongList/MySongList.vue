@@ -29,6 +29,7 @@
       },
       selectItem(item,index){
         this.$emit('select', item, index)
+        // console.log('item',item)
       }
     }
   }

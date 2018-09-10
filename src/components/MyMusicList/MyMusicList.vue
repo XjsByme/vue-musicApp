@@ -94,6 +94,8 @@ export default{
     //设置歌手歌曲列表top,图片高度(224),$el 为 DOM 元素
     // this.$refs.list.$el.style.top = `${this.imageHeight}px`
     this.$refs.list.$el.style.top = `${this.$refs.bgImage.clientHeight}px`
+
+    // console.log(this.songs)
   },
   methods:{
     back() {

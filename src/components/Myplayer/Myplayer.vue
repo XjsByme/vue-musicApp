@@ -1,22 +1,114 @@
 <template>
-	 <div class="player">
-		<div class="normal-player" v-show="fullScreen">
-			<div class="background">
-          		<img width="100%" height="100%">
-        	</div>
-        	<div class="top">
-				<div class="back">
-					<i class="icon-back"></i>
-				</div>
-				<h1 class="title"></h1>
-				<h2 class="subtitle"></h2>
-   		    </div>
-		</div>
-	</div>
+  <div class="player" v-show="playlist.length > 0">
+      <!-- 正常的播放器 v-show="fullScreen" 其实就是一个显隐 -->
+    <!-- 动画 transition 以及动画事件-->
+    <transition name="normal" @enter="enter" @after-enter="afterEnter" @leave="leave" @after-leave="afterLeave">
+      <div class="normal-player" v-show="fullScreen">
+        <!-- 背景图 -->
+        <div class="background">
+          <img width="100%" height="100%" :src="currentSong.image">
+        </div>
+        <!-- 顶部 -->
+        <div class="top">
+          <div class="back" @click="back">
+            <i class="icon-back"></i>
+          </div>
+          <h1 class="title" v-html="currentSong.name"></h1>
+          <h2 class="subtitle" v-html="currentSong.singer"></h2>
+        </div>
+        <!-- 唱片 -->
+        <div class="middle">
+          <div class="middle-l" ref="middleL">
+            <div class="cd-wrapper" ref="cdWrapper">
+              <div class="cd">
+                <img class="image" :src="currentSong.image">
+              </div>
+            </div>
+            <div class="playing-lyric-wrapper">
+              <div class="playing-lyric"></div>
+            </div>
+          </div>
+          <!-- <scroll class="middle-r" ref="lyricList">
+            <div class="lyric-wrapper">
+              <div>
+                <p ref="lyricLine" class="text"></p>
+              </div>
+            </div>
+          </scroll> -->
+        </div>
+        <div class="bottom">
+          <div class="dot-wrapper">
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+          <div class="progress-wrapper">
+            <span class="time time-l"></span>
+            <div class="progress-bar-wrapper">
+              <!-- <progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar> -->
+            </div>
+            <span class="time time-r"></span>
+          </div>
+          <div class="operators">
+            <!-- 播放模式 -->
+            <div class="icon i-left" @click="changeMode">
+              <i :class="iconMode"></i>
+            </div>
+            <!-- 播放 上一首 停止 下一首 -->
+            <div class="icon i-left" >
+              <i class="icon-prev"></i>
+            </div>
+            <div class="icon i-center">
+              <!-- 播放暂停 -->
+              <!-- :class="playIcon"样式控制，playIcon是个方法 -->
+              <i @click="togglePlaying" :class="playIcon"></i>
+            </div>
+            <div class="icon i-right">
+              <i class="icon-next"></i>
+            </div>
+            <!-- 喜欢 -->
+            <div class="icon i-right">
+              <i class="icon icon-not-favorite"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
+    <transition name="mini">
+      <!-- 底部迷你播放 v-show="!fullScreen" 控制显隐-->
+      <div class="mini-player" @click="open" v-show="!fullScreen">
+        <div class="icon">
+          <img width="40" height="40" :src="currentSong.image" :class="playing ? 'play' : 'play pause'">
+        </div>
+        <div class="text">
+          <h2 class="name" v-html="currentSong.name"></h2>
+          <p class="desc" v-html="currentSong.singer"></p>
+        </div>
+        <div class="control">
+          <!-- <progress-circle :radius="radius" :percent="percent">
+            <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
+          </progress-circle> -->
+          <!-- <i @click.stop="togglePlaying" :class="playing ? 'icon-pause-mini' : 'icon-play-mini'"></i> -->
+          <i @click.stop="togglePlaying" :class="miniIcon"></i>
+        </div>
+        <div class="control">
+          <i class="icon-playlist"></i>
+        </div>
+      </div>
+    </transition>
+    <!-- 播放功能 -->
+    <!-- <audio src="http://dl.stream.qqmusic.qq.com/C1L0001ApDs72gYqUk.m4a?vkey=F33047F1591194F61A2B27094B6CB1CBBD4C504FDB466A9975ADE22861FE0845D36C70AA0E23FF9000B2D5DEE71EB63E904224A849A7C59F&guid=8715282750&uin=2703401268&fromtag=66" ref="audio">
+    </audio> -->
+    <audio :src="currentSong.url" ref="audio"></audio>
+  </div>
 </template>
-
 <script type="text/ecmascript-6">
-import { mapGetters } from 'vuex'
+import { mapGetters,mapMutations } from 'vuex'
+//引用create-keyframe-animation 库，方便js中写动画函数
+import animations from 'create-keyframe-animation'
+//css3兼容写法各个浏览器
+import {prefixStyle} from 'common/js/dom'
+
+const transform = prefixStyle('transform')
 export default {
 	components:{
 
@@ -30,11 +122,144 @@ export default {
 	computed:{
 		//getter中的方法(引用)
 		...mapGetters([
-	        'currentIndex',
-	        'fullScreen',
-	        'playing'
-      	])
-	}
+      'currentIndex',//当前索引
+      'fullScreen',//是否显示
+      'playlist',//播放列表
+      'currentSong',//当前歌曲
+      'playing',//播放/暂停
+      'mode'//播放模式
+  	]),
+    //播放暂停，开始
+    playIcon() {
+      return this.playing ? 'icon-pause' : 'icon-play'
+    },
+    //播放模式
+    iconMode () {
+      let cls = ''
+      if (this.mode === 0) {
+        cls = 'icon-sequence'
+      } else if (this.mode === 1) {
+        cls = 'icon-loop'
+      } else if (this.mode === 2) {
+        cls = 'icon-random'
+      } else {
+        cls = ''
+      }
+      return cls
+    },
+    //底部迷你播放按钮控制样式
+    miniIcon(){
+      return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+    }
+	},
+  methods:{
+    //mapMutations中的方法(引用)
+    ...mapMutations(
+      {
+        setfullScreen: 'SET_FULL_SCREEN', //是否全屏 setfullScreen 是方法名，他是一个对象，对应到SET_FULL_SCREEN 
+        setPlayingState: 'SET_PLAYING_STATE',//是否播放
+      }
+    ),
+    // 最小化播放器
+    back() {
+      this.setfullScreen(false) //这是mapMutations里面的方法
+    },
+    // 最大化播放器
+    open() {
+      this.setfullScreen(true)
+    },
+    //transition normal 相关动画事件 
+    enter(el,done){
+      //解构赋值
+      const {x, y, scale} = this._getPosAndScale()
+      // console.log('23',x, y, scale)
+      //定义动画
+      let animation = {
+        0: { //初始值
+          transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
+        },
+        60: {
+          transform: `translate3d(0,0,0) scale(1.1)`
+        },
+        100: {
+          transform: `translate3d(0,0,0) scale(1)`
+        }
+      }
+      //调用animation相关设置
+      animations.registerAnimation({
+        name: 'move', //动画名称
+        animation, //动画内容
+        presets: {
+          duration: 400,
+          easing: 'linear'
+        }
+      })
+      //运行动画
+      animations.runAnimation(this.$refs.cdWrapper, 'move', done)
+    },
+    afterEnter(){
+      //完成后remove
+      animations.unregisterAnimation('move') //移除
+      this.$refs.cdWrapper.style.animation = '' //置空
+    },
+    leave(el, done){
+      this.$refs.cdWrapper.style.transition = 'all 0.4s'
+      const {x, y, scale} = this._getPosAndScale()
+      this.$refs.cdWrapper.style[transform] = `translate3d(${x}px,${y}px,0) scale(${scale})`
+      this.$refs.cdWrapper.addEventListener('transitionend', done)
+    },
+    afterLeave(){
+      this.$refs.cdWrapper.style.transition = ''
+      this.$refs.cdWrapper.style[transform] = ''
+    },
+    //获取x,y和缩放比例
+    _getPosAndScale() {
+      const targetWidth = 40 //左下角播放图标icon 的width
+      const paddingLeft = 40 //左下角播放图标icon 距离左侧的width
+      const paddingBottom = 30 //左下角播放图标icon 距离底部的高度
+      const paddingTop = 80 //中间播放图标icon 距离顶部的高度
+      const width = window.innerWidth * 0.8 //中间播放图标的宽度（因为这个设置就是设置的80%）
+      const scale = targetWidth / width //小图标与大图标的比例
+      const x = -(window.innerWidth / 2 - paddingLeft) // 偏移值 x
+      const y = window.innerHeight - paddingTop - width / 2 - paddingBottom // 偏移值 y
+      return {
+        x,
+        y,
+        scale
+      }
+    },
+    //播放按钮-暂停、播放
+    togglePlaying(){
+      //播放暂停状态
+       this.setPlayingState(!this.playing)
+    },
+    //播放模式改变
+    changeMode(){
+      let mode = (this.mode + 1) % 3
+
+    }
+  },
+  created(){
+    console.log('currentSong',this.currentSong)
+    console.log('playing',this.playing)
+  },
+  //实时监听
+  watch:{
+    //当前歌曲
+    currentSong(){ //currentSong 变化的时候，就调用audio的方法
+      this.$nextTick(() => { //加一个延时
+        this.$refs.audio.play()
+      })
+    },
+    //当前是否播放
+    playing(newPlaying){
+      // console.log('newPlaying',newPlaying)
+      const audio = this.$refs.audio
+      this.$nextTick(() => { //加一个延时,避免报错
+        newPlaying?audio.play():audio.pause()
+      })
+    }
+  }
 }
 </script>
 <style scoped lang="stylus" rel="stylesheet/stylus">
@@ -208,10 +433,11 @@ export default {
             text-align: left
           .icon-favorite
             color: $color-sub-theme
+            // transition normal 动画
       &.normal-enter-active, &.normal-leave-active
         transition: all 0.4s
         .top, .bottom
-          transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32)
+          transition: all 0.4s cubic-bezier(0.86, 0.18, 0.82, 1.32) //cubic-bezier 贝塞尔曲线 
       &.normal-enter, &.normal-leave-to
         opacity: 0
         .top

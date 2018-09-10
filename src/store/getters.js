@@ -14,7 +14,10 @@ export const playing = state => {
 
 export const fullScreen = state => state.fullScreen
 
-export const playlist = state => state.playlist
+export const playlist = state => {
+	// console.log('playlist',state.playlist)
+  return state.playlist
+}
 
 export const sequenceList = state => state.sequenceList
 
@@ -23,5 +26,6 @@ export const mode = state => state.mode
 export const currentIndex = state => state.currentIndex //当前的
 //当前播放的 
 export const currentSong = (state) => {
+	// console.log(state.singer)
   return state.playlist[state.currentIndex] || {}
 }
