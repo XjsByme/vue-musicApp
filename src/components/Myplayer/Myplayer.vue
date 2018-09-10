@@ -55,16 +55,17 @@
               <i :class="iconMode"></i>
             </div>
             <!-- 播放 上一首 停止 下一首 -->
-            <div class="icon i-left" >
-              <i class="icon-prev"></i>
+            <!-- :class="disableCls" 是播放歌曲加载失败时不可点击 -->
+            <div class="icon i-left" :class="disableCls">
+              <i class="icon-prev" @click="prevSong"></i>
             </div>
-            <div class="icon i-center">
+            <div class="icon i-center" :class="disableCls">
               <!-- 播放暂停 -->
               <!-- :class="playIcon"样式控制，playIcon是个方法 -->
               <i @click="togglePlaying" :class="playIcon"></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-next"></i>
+            <div class="icon i-right" :class="disableCls">
+              <i class="icon-next" @click="nextSong"></i>
             </div>
             <!-- 喜欢 -->
             <div class="icon i-right">
@@ -101,7 +102,8 @@
     <!-- 播放功能 -->
     <!-- <audio src="http://dl.stream.qqmusic.qq.com/C1L0001ApDs72gYqUk.m4a?vkey=F33047F1591194F61A2B27094B6CB1CBBD4C504FDB466A9975ADE22861FE0845D36C70AA0E23FF9000B2D5DEE71EB63E904224A849A7C59F&guid=8715282750&uin=2703401268&fromtag=66" ref="audio">
     </audio> -->
-    <audio :src="currentSong.url" ref="audio"></audio>
+    <!-- @play="ready" @error="error" 避免点快了 报错 -->
+    <audio :src="currentSong.url" ref="audio" @play="ready" @error="error"></audio>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -118,7 +120,7 @@ export default {
 	},
 	data(){
 		return{
-
+      songReady: false //避免不能快速点击报错
 		}
 	},
 	//计算属性
@@ -158,6 +160,10 @@ export default {
     //播放旋转效果
     playingRotate(){
       return this.playing ? 'play':'play pause'
+    },
+    //没有加载/网络问题 不能点击
+    disableCls() {
+      return this.songReady ? '' : 'disable'
     }
 	},
   methods:{
@@ -166,6 +172,7 @@ export default {
       {
         setfullScreen: 'SET_FULL_SCREEN', //是否全屏 setfullScreen 是方法名，他是一个对象，对应到SET_FULL_SCREEN 
         setPlayingState: 'SET_PLAYING_STATE',//是否播放
+        setCurrentIndex: 'SET_CURRENT_INDEX'
       }
     ),
     // 最小化播放器
@@ -238,6 +245,9 @@ export default {
     },
     //播放按钮-暂停、播放
     togglePlaying(){
+      if (!this.songReady) {
+        return
+      }
       //播放暂停状态
        this.setPlayingState(!this.playing)
     },
@@ -245,6 +255,50 @@ export default {
     changeMode(){
       let mode = (this.mode + 1) % 3
 
+    },
+    //歌曲切换-上一首、下一首
+    prevSong(){
+      //避免不能快速点击，报错
+      if (!this.songReady) {
+        return
+      }
+      let index = this.currentIndex - 1
+      //第一首就最后一首歌
+      if (index === -1) {
+        index = this.playlist.length - 1
+      }
+      this.setCurrentIndex(index)
+      //切换后 播放按钮也要跟随变化
+      if (!this.playing) {
+        this.togglePlaying()
+        // this.songCanplay = false
+      }
+      this.songReady = false
+    },
+    nextSong(){
+      //避免不能快速点击，报错
+      if (!this.songReady) {
+        return
+      }
+      let index = this.currentIndex + 1
+      //最后一首的时候 重新开始
+      if (index === this.playlist.length) {
+        index = 0
+      }
+      this.setCurrentIndex(index)
+      //切换后 播放按钮也要跟随变化
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+      this.songReady = false
+    },
+    //避免不能快速点击，报错
+    ready(){
+      this.songReady = true
+    },
+    //加载失败使用出问题，dom报错避免
+    error(){
+      this.songReady = true
     }
   },
   created(){
@@ -310,7 +364,7 @@ export default {
           margin: 0 auto
           line-height: 40px
           text-align: center
-          no-wrap()
+          no-wrap() //超出省略
           font-size: $font-size-large
           color: $color-text
         .subtitle
