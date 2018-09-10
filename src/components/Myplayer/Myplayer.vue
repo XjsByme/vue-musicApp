@@ -103,7 +103,7 @@
     <!-- <audio src="http://dl.stream.qqmusic.qq.com/C1L0001ApDs72gYqUk.m4a?vkey=F33047F1591194F61A2B27094B6CB1CBBD4C504FDB466A9975ADE22861FE0845D36C70AA0E23FF9000B2D5DEE71EB63E904224A849A7C59F&guid=8715282750&uin=2703401268&fromtag=66" ref="audio">
     </audio> -->
     <!-- @play="ready" @error="error" 避免点快了 报错 -->
-    <audio :src="currentSong.url" ref="audio" @play="ready" @error="error"></audio>
+    <audio :src="currentSong.url" ref="audio" @play="ready" @error="error" @timeupdate="updateTime"></audio>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -120,7 +120,8 @@ export default {
 	},
 	data(){
 		return{
-      songReady: false //避免不能快速点击报错
+      songReady: false, //避免不能快速点击报错
+      updateTime:0
 		}
 	},
 	//计算属性
@@ -164,6 +165,9 @@ export default {
     //没有加载/网络问题 不能点击
     disableCls() {
       return this.songReady ? '' : 'disable'
+    },
+    updateTime(){
+      
     }
 	},
   methods:{
