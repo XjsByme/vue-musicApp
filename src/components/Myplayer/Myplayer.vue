@@ -20,7 +20,8 @@
         <div class="middle">
           <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
-              <div class="cd">
+              <!-- <div class="cd" :class="playing ? 'play' : 'play pause'"> -->
+              <div class="cd" :class="playingRotate">
                 <img class="image" :src="currentSong.image">
               </div>
             </div>
@@ -77,7 +78,8 @@
       <!-- 底部迷你播放 v-show="!fullScreen" 控制显隐-->
       <div class="mini-player" @click="open" v-show="!fullScreen">
         <div class="icon">
-          <img width="40" height="40" :src="currentSong.image" :class="playing ? 'play' : 'play pause'">
+          <!-- <img width="40" height="40" :src="currentSong.image" :class="playing ? 'play' : 'play pause'"> -->
+          <img width="40" height="40" :src="currentSong.image" :class="playingRotate">
         </div>
         <div class="text">
           <h2 class="name" v-html="currentSong.name"></h2>
@@ -88,6 +90,7 @@
             <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
           </progress-circle> -->
           <!-- <i @click.stop="togglePlaying" :class="playing ? 'icon-pause-mini' : 'icon-play-mini'"></i> -->
+          <!-- @click.stop 阻止冒泡 -->
           <i @click.stop="togglePlaying" :class="miniIcon"></i>
         </div>
         <div class="control">
@@ -129,6 +132,7 @@ export default {
       'playing',//播放/暂停
       'mode'//播放模式
   	]),
+    /* 以下样式控制 在html 中直接判断也可以 */
     //播放暂停，开始
     playIcon() {
       return this.playing ? 'icon-pause' : 'icon-play'
@@ -150,6 +154,10 @@ export default {
     //底部迷你播放按钮控制样式
     miniIcon(){
       return this.playing ? 'icon-pause-mini' : 'icon-play-mini'
+    },
+    //播放旋转效果
+    playingRotate(){
+      return this.playing ? 'play':'play pause'
     }
 	},
   methods:{
@@ -496,7 +504,7 @@ export default {
           position: absolute
           left: 0
           top: 0
-
+  //旋转动画
   @keyframes rotate
     0%
       transform: rotate(0)
