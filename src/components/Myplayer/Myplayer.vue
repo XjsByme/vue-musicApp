@@ -43,11 +43,15 @@
             <span class="dot"></span>
           </div>
           <div class="progress-wrapper">
-            <span class="time time-l"></span>
+            <!-- <span class="time time-l">{{format(currentTime)}}</span> -->
+            <!-- 时间戳形式 -->
+            <span class="time time-l">{{currentTime | currentTimeformat}}</span>
             <div class="progress-bar-wrapper">
               <!-- <progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar> -->
             </div>
-            <span class="time time-r"></span>
+            <!-- <span class="time time-r">{{format(currentSong.duration)}}</span> -->
+            <!-- 时间戳形式 -->
+            <span class="time time-r">{{currentSong.duration | currentTimeformat}}</span>
           </div>
           <div class="operators">
             <!-- 播放模式 -->
@@ -120,8 +124,8 @@ export default {
 	},
 	data(){
 		return{
-      songReady: false, //避免不能快速点击报错
-      updateTime:0
+      songReady: false,//避免不能快速点击报错
+      currentTime: 0
 		}
 	},
 	//计算属性
@@ -165,11 +169,25 @@ export default {
     //没有加载/网络问题 不能点击
     disableCls() {
       return this.songReady ? '' : 'disable'
-    },
-    updateTime(){
-      
     }
 	},
+  // format(interval){
+  //     interval = Math.floor(interval)
+  //     let minute = (Math.floor(interval / 60)).toString().padStart(2, '0')
+  //     let second = (interval % 60).toString().padStart(2, '0')
+  //     return `${minute}:${second}`
+  //   },
+  //播放时间时间戳转换过滤器
+  filters: {
+    currentTimeformat: function(value) {
+      if (!value) return ''
+      // return this.format(value)
+      let interval = Math.floor(value)
+      let minute = (Math.floor(interval / 60)).toString().padStart(2, '0')
+      let second = (interval % 60).toString().padStart(2, '0')
+      return `${minute}:${second}`
+    }
+  },
   methods:{
     //mapMutations中的方法(引用)
     ...mapMutations(
@@ -303,11 +321,40 @@ export default {
     //加载失败使用出问题，dom报错避免
     error(){
       this.songReady = true
+    },
+    // audio API timeupdate  当目前的播放位置已更改时
+    // HTML5 Audio/Video 属性 currentTime  设置或返回音频/视频中的当前播放位置（以秒计）
+    updateTime(e){
+      this.currentTime = e.target.currentTime
+      // console.log(this.currentTime)
+    },
+    //时间戳转换
+    // format(interval){
+    //   interval = interval | 0 //取整
+    //   const minute = this._pad(interval/60) | 0
+    //   const second = this._pad(interval%60)
+    //   return `${minute}:${second}`
+    // },
+    // 时间戳转换 es6 语法
+    format(interval){
+      interval = Math.floor(interval)
+      let minute = (Math.floor(interval / 60)).toString().padStart(2, '0')
+      let second = (interval % 60).toString().padStart(2, '0')
+      return `${minute}:${second}`
+    },
+    //补零
+    _pad(num,n = 2){
+      let len = num.toString().length
+      while(len < 2){
+        num = '0' + num
+        len ++
+      }
+      return num
     }
   },
   created(){
     console.log('currentSong',this.currentSong)
-    console.log('playing',this.playing)
+    // console.log('currentTime',this.currentTime)
   },
   //实时监听
   watch:{
