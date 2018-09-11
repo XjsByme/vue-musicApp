@@ -10,7 +10,7 @@
     <!-- :style="bgStyle" 是设置背景图片 -->
     <div class="bg-image" ref="bgImage" :style="bgStyle">
       <!-- 播放图片 -->
-      <div class="play-wrapper">
+      <div class="play-wrapper" @click="random">
         <div ref="playBtn" class="play" v-show="songs.length>0">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
@@ -110,12 +110,19 @@ export default{
     },
     ...mapActions([
       'selectPlay',//引用actions中的selectPlay方法
+      'randomPlay'
     ]),
     selectItem(item,index){
       //selectPlay 是 mapActions（store中actions中的方法）,把songs 和 index 传过去
       this.selectPlay({
         list: this.songs,
         index
+      })
+    },
+    //随机播放
+    random(){
+      this.randomPlay({
+        list: this.songs
       })
     }
   },

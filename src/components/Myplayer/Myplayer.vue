@@ -114,7 +114,7 @@
     <!-- <audio src="http://dl.stream.qqmusic.qq.com/C1L0001ApDs72gYqUk.m4a?vkey=F33047F1591194F61A2B27094B6CB1CBBD4C504FDB466A9975ADE22861FE0845D36C70AA0E23FF9000B2D5DEE71EB63E904224A849A7C59F&guid=8715282750&uin=2703401268&fromtag=66" ref="audio">
     </audio> -->
     <!-- @play="ready" @error="error" 避免点快了 报错 -->
-    <audio :src="currentSong.url" ref="audio" @play="ready" @error="error" @timeupdate="updateTime"></audio>
+    <audio :src="currentSong.url" ref="audio" @play="ready" @error="error" @timeupdate="updateTime" @ended="end"></audio>
   </div>
 </template>
 <script type="text/ecmascript-6">
@@ -127,6 +127,10 @@ import {prefixStyle} from 'common/js/dom'
 import MyProgressBar from 'base/MyProgressBar/MyProgressBar'
 //圆形进度条组件
 import MyProgressCircle from 'base/MyProgressCircle/MyProgressCircle'
+//播放模式
+import {playMode} from 'common/js/config'
+//洗牌函数
+import {shuffle} from 'common/js/util'
 
 const transform = prefixStyle('transform')
 export default {
@@ -152,7 +156,8 @@ export default {
       'playlist',//播放列表
       'currentSong',//当前歌曲
       'playing',//播放/暂停
-      'mode'//播放模式
+      'mode',//播放模式
+      'sequenceList'
   	]),
     /* 以下样式控制 在html 中直接判断也可以 */
     //播放暂停，开始
@@ -161,17 +166,19 @@ export default {
     },
     //播放模式
     iconMode () {
-      let cls = ''
-      if (this.mode === 0) {
-        cls = 'icon-sequence'
-      } else if (this.mode === 1) {
-        cls = 'icon-loop'
-      } else if (this.mode === 2) {
-        cls = 'icon-random'
-      } else {
-        cls = ''
-      }
-      return cls
+      // let cls = ''
+      // if (this.mode === 0) {
+      //   cls = 'icon-sequence'
+      // } else if (this.mode === 1) {
+      //   cls = 'icon-loop'
+      // } else if (this.mode === 2) {
+      //   cls = 'icon-random'
+      // } else {
+      //   cls = ''
+      // }
+      // return cls
+
+      return this.mode === playMode.sequence?'icon-sequence':this.mode===playMode.loop?'icon-loop':'icon-random'
     },
     //底部迷你播放按钮控制样式
     miniIcon(){
@@ -214,7 +221,9 @@ export default {
       {
         setfullScreen: 'SET_FULL_SCREEN', //是否全屏 setfullScreen 是方法名，他是一个对象，对应到SET_FULL_SCREEN 
         setPlayingState: 'SET_PLAYING_STATE',//是否播放
-        setCurrentIndex: 'SET_CURRENT_INDEX'
+        setCurrentIndex: 'SET_CURRENT_INDEX',
+        setPlayMode:'SET_PLAY_MODE',
+        setPlayList:'SET_PLAYLIST'
       }
     ),
     // 最小化播放器
@@ -296,7 +305,21 @@ export default {
     //播放模式改变
     changeMode(){
       let mode = (this.mode + 1) % 3
-
+      this.setPlayMode(mode)
+      let list = null
+      if(mode === playMode.random){
+        list = shuffle(this.sequenceList)
+      }else{
+        list = this.sequenceList
+      }
+      this.setPlayList(list)
+      this.resetCurrentIndex(list)
+    },
+    resetCurrentIndex(list){
+      let index = list.findIndex((item)=>{
+        return item.id === this.currentSong.id
+      })
+      this.setCurrentIndex(index)
     },
     //歌曲切换-上一首、下一首
     prevSong(){
@@ -383,7 +406,24 @@ export default {
       // if (this.currentLyric) {
       //   this.currentLyric.seek(currentTime * 1000)
       // }
-    }
+    },
+    //到最后播完了切换到下一首
+    end(){
+      if(this.mode === playMode.loop){ //如果是单曲循环播放
+        this.loopSong()
+      }else{
+        
+      }
+    },
+    loopSong() {
+      this.$refs.audio.currentTime = 0
+      this.$refs.audio.play()
+      // this.setPlayingState(true)
+      // 单曲循环时，歌词也单曲循环
+      // if (this.currentLyric) {
+      //   this.currentLyric.seek(0)
+      // }
+    },
   },
   created(){
     console.log('currentSong',this.currentSong)
@@ -392,7 +432,15 @@ export default {
   //实时监听
   watch:{
     //当前歌曲
-    currentSong(){ //currentSong 变化的时候，就调用audio的方法
+    currentSong(newVal, oldVal){ //currentSong 变化的时候，就调用audio的方法
+      // 播放列表没有歌曲就退出
+      if (!newVal.id) {
+        return
+      }
+
+      if (newVal.id === oldVal.id) {
+        return
+      }
       this.$nextTick(() => { //加一个延时
         this.$refs.audio.play()
       })
