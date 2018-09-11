@@ -5,11 +5,13 @@ http://www.runoob.com/svg/svg-example.html
 
 <template>
   <div class="my-progress-circle">
+    <!-- viewBox="0 0 100 100"视口宽度和位置 -->
     <svg :width="radius" :height="radius" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg">
+      <!-- cx="50" cy="50" r="50"  表示半径50 x 50 y 50 的圆 -->
       <circle class="progress-background" cx="50" cy="50" r="50" fill="transparent"/>
+      <!-- :stroke-dasharray="dasharray" :stroke-dashoffset="dashoffset" 描边及描边位置 -->
       <circle class="progress-bar" cx="50" cy="50" r="50" fill="transparent" :stroke-dasharray="dasharray" :stroke-dashoffset="dashoffset"/>
     </svg>
-
     <slot></slot>
   </div>
 </template>
@@ -19,7 +21,7 @@ export default {
   components: {},
   data () {
     return {
-      dasharray: Math.PI * 100
+      dasharray: Math.PI * 100 //圆的周长
     }
   },
   props: {
@@ -37,7 +39,7 @@ export default {
   methods: {},
   computed: {
     dashoffset() {
-      return (1 - this.percent) * this.dasharray
+      return (1 - this.percent) * this.dasharray //播放进度
     }
   },
   created () {},

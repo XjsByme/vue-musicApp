@@ -99,7 +99,11 @@
           </progress-circle> -->
           <!-- <i @click.stop="togglePlaying" :class="playing ? 'icon-pause-mini' : 'icon-play-mini'"></i> -->
           <!-- @click.stop 阻止冒泡 -->
-          <i @click.stop="togglePlaying" :class="miniIcon"></i>
+          <!-- 圆形进度条组件 -->
+          <MyProgressCircle :radius="radius" :percent="percent">
+            <!-- class="icon-mini"  定义位置 togglePlaying 开始暂停播放 -->
+            <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
+          </MyProgressCircle>
         </div>
         <div class="control">
           <i class="icon-playlist"></i>
@@ -121,17 +125,22 @@ import animations from 'create-keyframe-animation'
 import {prefixStyle} from 'common/js/dom'
 //进度条组件
 import MyProgressBar from 'base/MyProgressBar/MyProgressBar'
+//圆形进度条组件
+import MyProgressCircle from 'base/MyProgressCircle/MyProgressCircle'
 
 const transform = prefixStyle('transform')
 export default {
 	components:{
     //进度条组件
-    MyProgressBar
+    MyProgressBar,
+    //圆形进度条
+    MyProgressCircle
 	},
 	data(){
 		return{
       songReady: false,//避免不能快速点击报错
-      currentTime: 0
+      currentTime: 0,
+      radius:32//半径
 		}
 	},
 	//计算属性
