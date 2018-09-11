@@ -46,8 +46,11 @@
             <!-- <span class="time time-l">{{format(currentTime)}}</span> -->
             <!-- 时间戳形式 -->
             <span class="time time-l">{{currentTime | currentTimeformat}}</span>
+            <!-- 进度条组件 -->
             <div class="progress-bar-wrapper">
-              <!-- <progress-bar :percent="percent" @percentChange="onProgressBarChange"></progress-bar> -->
+              <!-- <MyProgressBar :percent="percent" @percentChange="onProgressBarChange"></MyProgressBar> -->
+              <!-- @percentChange是组件派发出来的 -->
+              <MyProgressBar :percent="percent" @percentChange="onpercentChange"></MyProgressBar>
             </div>
             <!-- <span class="time time-r">{{format(currentSong.duration)}}</span> -->
             <!-- 时间戳形式 -->
@@ -116,11 +119,14 @@ import { mapGetters,mapMutations } from 'vuex'
 import animations from 'create-keyframe-animation'
 //css3兼容写法各个浏览器
 import {prefixStyle} from 'common/js/dom'
+//进度条组件
+import MyProgressBar from 'base/MyProgressBar/MyProgressBar'
 
 const transform = prefixStyle('transform')
 export default {
 	components:{
-
+    //进度条组件
+    MyProgressBar
 	},
 	data(){
 		return{
@@ -169,6 +175,11 @@ export default {
     //没有加载/网络问题 不能点击
     disableCls() {
       return this.songReady ? '' : 'disable'
+    },
+    //播放进度
+    percent(){
+      //当前播放所占比例
+      return this.currentTime/this.currentSong.duration
     }
 	},
   // format(interval){
@@ -350,6 +361,19 @@ export default {
         len ++
       }
       return num
+    },
+    // 进度条组件-组件派发来的事件
+    onpercentChange(percent) {
+      //播放时间比例*宽度比例 = 播放时间进度
+      const currentTime = this.currentSong.duration * percent
+      this.$refs.audio.currentTime = currentTime
+      //保持拖动后继续播放
+      if (!this.playing) {
+        this.togglePlaying()
+      }
+      // if (this.currentLyric) {
+      //   this.currentLyric.seek(currentTime * 1000)
+      // }
     }
   },
   created(){
