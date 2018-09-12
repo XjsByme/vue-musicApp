@@ -307,19 +307,19 @@ export default {
       let mode = (this.mode + 1) % 3
       this.setPlayMode(mode)
       let list = null
-      if(mode === playMode.random){
+      console.log(mode,playMode.random)
+      if(mode === playMode.random){ //随机播放
         list = shuffle(this.sequenceList)
       }else{
         list = this.sequenceList
       }
-      this.setPlayList(list)
-      this.resetCurrentIndex(list)
-    },
-    resetCurrentIndex(list){
-      let index = list.findIndex((item)=>{
+      // 调整当前歌曲的索引
+      let index = list.findIndex((item) => {
         return item.id === this.currentSong.id
       })
+      //
       this.setCurrentIndex(index)
+      this.setPlayList(list)
     },
     //歌曲切换-上一首、下一首
     prevSong(){
@@ -412,9 +412,10 @@ export default {
       if(this.mode === playMode.loop){ //如果是单曲循环播放
         this.loopSong()
       }else{
-        
+        this.nextSong()
       }
     },
+    //循环播放
     loopSong() {
       this.$refs.audio.currentTime = 0
       this.$refs.audio.play()

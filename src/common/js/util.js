@@ -11,7 +11,7 @@ function getRandom(min, max) {
  * @return {Array}     新数组
  */
 // export function shuffle(arr, flag = false) {
-// 	// console.log('arr',arr)
+//  // console.log('arr',arr)
 //     let newArr = []
 //     flag ? (newArr = arr) : (newArr = this.cloneArr(arr))
 
@@ -23,16 +23,43 @@ function getRandom(min, max) {
 //     }
 //     return newArr
 // }
-export function shuffle(arr) {
-	// console.log('arr',arr)
-    // let newArr = []
-    // flag ? (newArr = arr) : (newArr = this.cloneArr(arr))
-    let _arr = arr.slice()
-    for (let i = 0; i < _arr.length; i++) {
+// export function shuffle(arr) {
+//  // console.log('arr',arr)
+//     // let newArr = []
+//     // flag ? (newArr = arr) : (newArr = this.cloneArr(arr))
+//     let _arr = arr.slice()
+//     for (let i = 0; i < _arr.length; i++) {
+//         let j = getRandom(0, i)
+//         let temp = _arr[i]
+//         _arr[i] = _arr[j]
+//         _arr[j] = temp
+//     }
+//     return _arr
+// }
+
+/**
+ * 克隆数组
+ * @param  {array} arr 原数组
+ * @return {array}     新数组
+ */
+function cloneArr(arr) {
+    // 从第一个字符就开始 copy
+    // slice(start,end) 方法可从已有的数组中返回选定的元素。
+    return arr.slice(0)
+}
+
+export function shuffle(arr, flag = false) {
+    // console.log('arr',arr)
+    let newArr = []
+    flag ? (newArr = arr) : (newArr = cloneArr(arr))
+
+    for (let i = 0; i < newArr.length; i++) {
         let j = getRandom(0, i)
-        let temp = _arr[i]
-        _arr[i] = _arr[j]
-        _arr[j] = temp
+        let temp = newArr[i]
+        newArr[i] = newArr[j]
+        newArr[j] = temp
     }
-    return _arr
+    // console.log('arr',arr,newArr)
+
+    return newArr
 }
