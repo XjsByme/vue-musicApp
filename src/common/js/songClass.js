@@ -1,3 +1,6 @@
+import { getLyric } from 'api/getDateServer'
+import { Base64 } from 'js-base64'
+
 /*
 *歌手详情歌单封装
 */
@@ -12,10 +15,26 @@ export default class Song {
     this.image = image
     this.url = url
   }
+  //获取歌词数据
+  getLyric(){
+  	if (this.lyric) {
+      return Promise.resolve(this.lyric)
+    }
+    return new Promise((resolve, reject) => {
+      getLyric(this.mid).then((res) => {
+        if (res.retcode === 0) {
+          this.lyric = Base64.decode(res.lyric)
+          // console.log('this.lyric',this.lyric)
+          resolve(this.lyric)
+        } else {
+          reject('no lyric')
+        }
+      })
+    })
+  }
 }
 //拓展song类工厂方法-在这里new Song, 避免在组件中写很多
 export function CreatSong(musicData){
-	// console.log('musicData',musicData)
 	return new Song({
 		id: musicData.songid,
 		mid: musicData.songmid,

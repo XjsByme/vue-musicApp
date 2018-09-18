@@ -39,18 +39,47 @@ const devWebpackConfig = merge(baseWebpackConfig, {
         before(app) {
             // 推荐热门歌单
             app.get('/api/getDiscList', function(req, res) {
-                var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
+                    var url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
+                    axios.get(url, {
+                        headers: {
+                            referer: 'https://c.y.qq.com/',
+                            host: 'c.y.qq.com'
+                        },
+                        params: req.query
+                    }).then((response) => {
+                        res.json(response.data)
+                    }).catch((e) => {
+                        console.log(e)
+                    })
+                }),
+            // 歌词
+            app.get('/api/getLyric', function(req, res) {
+                var url = 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg'
+
                 axios.get(url, {
-                    headers: {
-                        referer: 'https://c.y.qq.com/',
-                        host: 'c.y.qq.com'
-                    },
-                    params: req.query
-                }).then((response) => {
-                    res.json(response.data)
-                }).catch((e) => {
-                    console.log(e)
-                })
+                        headers: {
+                            referer: 'https://c.y.qq.com/',
+                            host: 'c.y.qq.com'
+                        },
+                        params: req.query
+                    })
+                    .then((response) => {
+                        // jsonp 数据转为 json 数据
+                        var result = response.data
+                        if (typeof result === 'string') {
+                            var reg = /^\w+\(({[^()]+})\)$/
+                            var matches = result.match(reg)
+
+                            if (matches) {
+                                result = JSON.parse(matches[1])
+                            }
+                        }
+                        res.json(result)
+                        // res.json(response.data)
+                    })
+                    .catch((error) => {
+                        console.log(error)
+                    })
             })
         },
         //----------------axios 结合 node.js 代理后端请求

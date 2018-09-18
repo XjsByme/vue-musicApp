@@ -17,7 +17,7 @@
           <h2 class="subtitle" v-html="currentSong.singer"></h2>
         </div>
         <!-- 唱片 -->
-        <div class="middle">
+        <div class="middle" @touchstart.prevent="middleTouchstart" @touchmove.prevent="middleTouchmove" @touchend="middleTouchend">
           <div class="middle-l" ref="middleL">
             <div class="cd-wrapper" ref="cdWrapper">
               <!-- <div class="cd" :class="playing ? 'play' : 'play pause'"> -->
@@ -25,22 +25,24 @@
                 <img class="image" :src="currentSong.image">
               </div>
             </div>
+            <!-- cd页小段歌词 -->
             <div class="playing-lyric-wrapper">
               <div class="playing-lyric"></div>
             </div>
           </div>
-          <!-- <scroll class="middle-r" ref="lyricList">
+          <!-- 歌词 -->
+          <MyScroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines">
             <div class="lyric-wrapper">
-              <div>
-                <p ref="lyricLine" class="text"></p>
+              <div v-if="currentLyric">
+                <p ref="lyricLine" class="text" v-for="(item,index) in currentLyric.lines" :class="{ 'current':currentLyricLine === index }">{{item.txt}}</p>
               </div>
             </div>
-          </scroll> -->
+          </MyScroll>
         </div>
         <div class="bottom">
           <div class="dot-wrapper">
-            <span class="dot"></span>
-            <span class="dot"></span>
+            <span class="dot" :class="{'active':currentDot === 'cd'}"></span>
+            <span class="dot" :class="{'active':currentDot === 'lyric'}"></span>
           </div>
           <div class="progress-wrapper">
             <!-- <span class="time time-l">{{format(currentTime)}}</span> -->
@@ -131,20 +133,32 @@ import MyProgressCircle from 'base/MyProgressCircle/MyProgressCircle'
 import {playMode} from 'common/js/config'
 //洗牌函数
 import {shuffle} from 'common/js/util'
+//歌词处理
+import Lyric from 'lyric-parser'
+//滚动组件
+//scroll 引入
+import MyScroll from 'base/MyScroll/MyScroll'
 
 const transform = prefixStyle('transform')
+
+const transitionduration = prefixStyle('transitionDuration')
 export default {
 	components:{
     //进度条组件
     MyProgressBar,
     //圆形进度条
-    MyProgressCircle
+    MyProgressCircle,
+    //滚动
+    MyScroll
 	},
 	data(){
 		return{
       songReady: false,//避免不能快速点击报错
       currentTime: 0,
-      radius:32//半径
+      radius:32,//半径,
+      currentLyric:null,
+      currentLyricLine:0, //当前的歌词
+      currentDot: 'cd'// 当前在哪个分页(默认cd)
 		}
 	},
 	//计算属性
@@ -425,10 +439,96 @@ export default {
       //   this.currentLyric.seek(0)
       // }
     },
+    //获取歌词
+    getLyric(){
+      this.currentSong.getLyric().then((lyric)=>{
+        this.currentLyric = new Lyric(lyric,this.handleLyric)
+        if(this.playing){
+          this.currentLyric.play()
+        }
+        console.log('this.currentLyric',this.currentLyric)
+      })
+    },
+    //歌词每一行发生改变
+    handleLyric({lineNum,txt}){
+      this.currentLyricLine = lineNum
+      if(lineNum > 5){
+        let lineEl = this.$refs.lyricLine[lineNum-5]
+        this.$refs.lyricList.scrollElement(lineEl,1000)
+      }else{
+        this.$refs.lyricList.scrollTo(0, 0, 1000)
+      }
+    },
+    //
+     // 滑动翻页
+    middleTouchstart (e) {
+      this.touch.init = true
+      // 开始滑动的位置
+      this.touch.startX = e.touches[0].pageX
+      this.touch.startY = e.touches[0].pageY
+    },
+    middleTouchmove (e) {
+      if (!this.touch.init) {
+        return
+      }
+      // 滑动的差值
+      let deltaX = e.touches[0].pageX - this.touch.startX
+      let deltaY = e.touches[0].pageY - this.touch.startY
+
+      // 纵向滚动 return
+      if (Math.abs(deltaX) < Math.abs(deltaY)) {
+        return
+      }
+
+      let left = this.currentDot === 'cd' ? 0 : -window.innerWidth
+      // 左滑的距离
+      let offsetWidth = Math.min(0, Math.max(-window.innerWidth, left + deltaX))
+      this.touch.percent = Math.abs(offsetWidth / window.innerWidth)
+      // console.log(this.touch.percent)
+
+      this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
+      // 过渡效果坚持 0ms
+      this.$refs.lyricList.$el.style[transitionduration] = 0
+      // 背景模糊
+      this.$refs.middleL.style.opacity = 1 - this.touch.percent
+      this.$refs.middleL.style[transitionduration] = 0
+    },
+    middleTouchend () {
+      let offsetWidth = null
+      let opacity = null
+
+      if (this.currentDot === 'cd') {
+        // 左滑
+        if (this.touch.percent > 0.1) {
+          offsetWidth = -window.innerWidth
+          this.currentDot = 'lyric'
+          opacity = 0
+        } else {
+          offsetWidth = 0
+          opacity = 1
+        }
+      } else {
+        // 右滑
+        if (this.touch.percent < 0.9) {
+          offsetWidth = 0
+          this.currentDot = 'cd'
+          opacity = 1
+        } else {
+          offsetWidth = -window.innerWidth
+          opacity = 0
+        }
+      }
+
+      this.$refs.lyricList.$el.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`
+      // 过渡效果坚持 300ms
+      this.$refs.lyricList.$el.style[transitionduration] = '300ms'
+      // 背景模糊
+      this.$refs.middleL.style.opacity = opacity
+      this.$refs.middleL.style[transitionduration] = '300ms'
+    }
   },
   created(){
-    console.log('currentSong',this.currentSong)
-    // console.log('currentTime',this.currentTime)
+    this.touch = {}
   },
   //实时监听
   watch:{
@@ -444,6 +544,8 @@ export default {
       }
       this.$nextTick(() => { //加一个延时
         this.$refs.audio.play()
+        //歌词数据
+        this.getLyric()
       })
     },
     //当前是否播放
