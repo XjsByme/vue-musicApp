@@ -58,7 +58,10 @@
   import MyScroll from 'base/MyScroll/MyScroll'
   //loading 引入
   import Myloading from 'base/Myloading/Myloading'
+  //playlistMixin引入
+  import { playlistMixin } from '@/common/js/mixin.js'
   export default{
+    mixins: [playlistMixin],
     //数据对象-默认值
     data() {
       return {
@@ -86,6 +89,11 @@
     },
     //定义方法
     methods:{
+      handlePlaylist(playlist){
+        let bottom = playlist.length > 0 ? '60px' : ''
+        this.$refs.recommend.style.bottom = bottom
+        this.$refs.scroll.refresh()
+      },
       //轮播图数据
       _getRecommend(){
         //getRecommend() 是请求接口方法

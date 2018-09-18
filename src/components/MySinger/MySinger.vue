@@ -17,11 +17,13 @@ import Singer from 'common/js/SingerClass'
 import SingerList from 'base/SingerList/SingerList'
 // ...mapMutations （相当于this.$store.commit('xxx')）
 import { mapMutations } from 'vuex'
-
+//playlistMixin引入
+import { playlistMixin } from '@/common/js/mixin.js'
 const HOT_NAME = '热门'
 const HOT_SINGER_LEN = 10
 
 export default {
+  mixins: [playlistMixin],
   //注册组件
   components: {
 	  SingerList
@@ -35,6 +37,11 @@ export default {
   	this._getSingerList()
   },
   methods:{
+    handlePlaylist(playlist){
+      let bottom = playlist.length > 0 ? '60px' : ''
+      this.$refs.singer.style.bottom = bottom
+      this.$refs.list.refresh()
+    },
     //拿到选择的歌手
     selectSinger(singer){
       //跳转到详情页

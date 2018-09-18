@@ -203,6 +203,9 @@ export default {
     selectItem(item){
       //告诉它我点击了什么
       this.$emit('select',item)
+    },
+    refresh(){
+      this.$refs.scrollRef.refresh()
     }
   },
   //计算属性 -方法 返回return

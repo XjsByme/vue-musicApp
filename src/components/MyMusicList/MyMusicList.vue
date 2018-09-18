@@ -47,8 +47,11 @@ const transform = prefixStyle('transform')
 const backdrop = prefixStyle('backdrop-filter')
 //mapActions引入
 import {mapActions} from 'vuex'
+//playlistMixin引入
+import { playlistMixin } from '@/common/js/mixin.js'
 
 export default{
+  mixins: [playlistMixin],
   components:{
     MyScroll,
     MySongList,
@@ -98,6 +101,12 @@ export default{
     // console.log(this.songs)
   },
   methods:{
+    // 当有迷你播放器时，调整滚动底部距离
+    handlePlaylist(playlist) {
+      let bottom = playlist.length > 0 ? '60px' : ''
+      this.$refs.list.$el.style.bottom = bottom
+      this.$refs.list.refresh()
+    },
     back() {
       //返回
       this.$router.back()

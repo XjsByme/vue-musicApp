@@ -27,7 +27,7 @@
             </div>
             <!-- cd页小段歌词 -->
             <div class="playing-lyric-wrapper">
-              <div class="playing-lyric"></div>
+              <div class="playing-lyric">{{playingLyric}}</div>
             </div>
           </div>
           <!-- 歌词 -->
@@ -158,7 +158,8 @@ export default {
       radius:32,//半径,
       currentLyric:null,
       currentLyricLine:0, //当前的歌词
-      currentDot: 'cd'// 当前在哪个分页(默认cd)
+      currentDot: 'cd',// 当前在哪个分页(默认cd)
+      playingLyric: '无歌词数据'
 		}
 	},
 	//计算属性
@@ -315,6 +316,9 @@ export default {
       }
       //播放暂停状态
        this.setPlayingState(!this.playing)
+       if(this.currentLyric){
+        this.currentLyric.togglePlay()
+       }
     },
     //播放模式改变
     changeMode(){
@@ -337,20 +341,25 @@ export default {
     },
     //歌曲切换-上一首、下一首
     prevSong(){
+
       //避免不能快速点击，报错
       if (!this.songReady) {
         return
       }
-      let index = this.currentIndex - 1
-      //第一首就最后一首歌
-      if (index === -1) {
-        index = this.playlist.length - 1
-      }
-      this.setCurrentIndex(index)
-      //切换后 播放按钮也要跟随变化
-      if (!this.playing) {
-        this.togglePlaying()
-        // this.songCanplay = false
+      if(this.playlist.length === 1){
+        this.loopSong()
+      }else{
+        let index = this.currentIndex - 1
+        //第一首就最后一首歌
+        if (index === -1) {
+          index = this.playlist.length - 1
+        }
+        this.setCurrentIndex(index)
+        //切换后 播放按钮也要跟随变化
+        if (!this.playing) {
+          this.togglePlaying()
+          // this.songCanplay = false
+        }
       }
       this.songReady = false
     },
@@ -359,15 +368,20 @@ export default {
       if (!this.songReady) {
         return
       }
-      let index = this.currentIndex + 1
-      //最后一首的时候 重新开始
-      if (index === this.playlist.length) {
-        index = 0
-      }
-      this.setCurrentIndex(index)
-      //切换后 播放按钮也要跟随变化
-      if (!this.playing) {
-        this.togglePlaying()
+      //如果只有一首歌
+      if(this.playlist.length === 1){
+        this.loopSong()
+      }else{
+        let index = this.currentIndex + 1
+        //最后一首的时候 重新开始
+        if (index === this.playlist.length) {
+          index = 0
+        }
+        this.setCurrentIndex(index)
+        //切换后 播放按钮也要跟随变化
+        if (!this.playing) {
+          this.togglePlaying()
+        }
       }
       this.songReady = false
     },
@@ -417,9 +431,11 @@ export default {
       if (!this.playing) {
         this.togglePlaying()
       }
-      // if (this.currentLyric) {
-      //   this.currentLyric.seek(currentTime * 1000)
-      // }
+
+      //拖动更新歌词
+      if (this.currentLyric) {
+        this.currentLyric.seek(currentTime * 1000)
+      }
     },
     //到最后播完了切换到下一首
     end(){
@@ -434,19 +450,35 @@ export default {
       this.$refs.audio.currentTime = 0
       this.$refs.audio.play()
       // this.setPlayingState(true)
-      // 单曲循环时，歌词也单曲循环
-      // if (this.currentLyric) {
-      //   this.currentLyric.seek(0)
-      // }
+      // 单曲循环时，歌词也单曲循环,重新开始
+      if (this.currentLyric) {
+        this.currentLyric.seek(0)
+      }
     },
     //获取歌词
     getLyric(){
-      this.currentSong.getLyric().then((lyric)=>{
-        this.currentLyric = new Lyric(lyric,this.handleLyric)
-        if(this.playing){
+      // this.currentSong.getLyric().then((lyric)=>{
+      //   this.currentLyric = new Lyric(lyric,this.handleLyric)
+      //   if(this.playing){
+      //     this.currentLyric.play()
+      //   }
+      //   console.log('this.currentLyric',this.currentLyric)
+      // })
+      this.currentSong.getLyric().then((lyric) => {
+        if (this.currentSong.lyric !== lyric) {
+          return
+        }
+        //歌词插件
+        //this.handleLyric 回调插件
+        this.currentLyric = new Lyric(lyric, this.handleLyric)
+        if (this.playing) {
           this.currentLyric.play()
         }
-        console.log('this.currentLyric',this.currentLyric)
+      }).catch(() => {
+        // 获取歌词失败时
+        this.currentLyric = null
+        this.playingLyric = '无歌词数据'
+        this.currentLyricLine = 0
       })
     },
     //歌词每一行发生改变
@@ -454,10 +486,12 @@ export default {
       this.currentLyricLine = lineNum
       if(lineNum > 5){
         let lineEl = this.$refs.lyricLine[lineNum-5]
-        this.$refs.lyricList.scrollElement(lineEl,1000)
+        this.$refs.lyricList.scrollToElement(lineEl,1000)
       }else{
         this.$refs.lyricList.scrollTo(0, 0, 1000)
       }
+      // 当前歌词
+      this.playingLyric = txt
     },
     //
      // 滑动翻页
@@ -542,11 +576,21 @@ export default {
       if (newVal.id === oldVal.id) {
         return
       }
-      this.$nextTick(() => { //加一个延时
+      //避免切换歌词出现bug,如果有，停止
+      if(this.currentLyric){
+        this.currentLyric.stop()
+      }
+      // this.$nextTick(() => { //加一个延时
+      //   this.$refs.audio.play()
+      //   //歌词数据
+      //   this.getLyric()
+      // })
+      //实现从手机上从后台切换到前台播放
+      setTimeout(()=>{
         this.$refs.audio.play()
         //歌词数据
         this.getLyric()
-      })
+      },100)
     },
     //当前是否播放
     playing(newPlaying){

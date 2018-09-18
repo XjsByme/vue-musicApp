@@ -15,6 +15,7 @@ handlePlaylist(playlist) {
 
 export const playlistMixin = {
   computed: {
+    //拿到播放列表
     ...mapGetters([
       'playlist'
     ])
