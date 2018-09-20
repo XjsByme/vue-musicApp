@@ -1,5 +1,6 @@
 <template>
   <div class="recommend" ref="recommend">
+    <router-view></router-view> 
     <!-- :data="discList" 给组件传入数据 -->
     <MyScroll ref="scroll" class="recommend-content" :data="discList" @scrollToEnd="scrollToEnd" :pullup="pullup">
       <!-- 插槽内容 -->
@@ -25,7 +26,7 @@
         <div class="recommend-list">
           <h1 class="list-title">热门歌单推荐</h1>
           <ul>
-            <li v-for="item in discList" class="item">
+            <li v-for="item in discList" class="item" @click="selectItem(item)">
               <div class="icon">
                 <!-- v-lazy 图片懒加载 -->
                 <img v-lazy="item.imgurl" width="60" height="60">
@@ -60,6 +61,8 @@
   import Myloading from 'base/Myloading/Myloading'
   //playlistMixin引入
   import { playlistMixin } from '@/common/js/mixin.js'
+  //mapmutations 拓展
+  import { mapMutations } from 'vuex'
   export default{
     mixins: [playlistMixin],
     //数据对象-默认值
@@ -124,7 +127,18 @@
       //滚动到底部了
       scrollToEnd(){
         this.bottomShow = true
-      }
+      },
+      //跳转详情
+      selectItem(item) {
+        this.$router.push({
+          path: `/recommend/${item.dissid}`
+        })
+        // 写入 vuex
+        this.setDisc(item)
+      },
+      ...mapMutations({
+        setDisc:'SET_DISC'
+      })
     }
   }
 </script>

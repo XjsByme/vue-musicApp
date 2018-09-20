@@ -8,6 +8,8 @@ import MyRank from '@/components/MyRank/MyRank'
 import MySearch from '@/components/MySearch/MySearch'
 //歌手详情页
 import MySingerDetail from '@/components/MySingerDetail/MySingerDetail'
+//推荐页歌曲详情
+import Disc from '@/components/disc/disc'
 
 // import MySingerDetail from '@/components/MySingerDetail/MySingerDetail'
 // import MySongListDetail from '@/components/MySongListDetail/MySongListDetail'
@@ -27,7 +29,14 @@ export default new Router({
     {
       path: '/recommend',
       name: 'recommend',
-      component: MyRecommend //推荐页面
+      component: MyRecommend, //推荐页面
+      children:[
+        {
+          path: ':id',
+          name:'disc',
+          component:Disc
+        }
+      ]
     },
     {
       path: '/singer',

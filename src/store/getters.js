@@ -29,3 +29,8 @@ export const currentSong = (state) => {
 	// console.log(state.singer)
   return state.playlist[state.currentIndex] || {}
 }
+
+//歌单详情部分
+export const disc = (state) =>{
+	return state.disc
+}

@@ -113,3 +113,88 @@ export function getLyric(mid) {
     return Promise.resolve(res.data)
   })
 }
+
+/**
+ * jsonp 抓取推荐页歌单详情数据(歌曲列表)
+ * 接口：https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg
+ * 提供方：https://y.qq.com/n/yqq/playlist/1471714611.html#
+ */
+// export function getSongList(disstid) {
+//   const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
+
+//   const data = Object.assign({}, commonParams, {
+//     disstid,
+//     type: 1,
+//     json: 1,
+//     utf8: 1,
+//     onlysong: 0,
+//     platform: 'yqq',
+//     hostUin: 0,
+//     needNewCode: 0
+//   })
+
+//   return jsonp(url, data, options)
+// }
+// export function getSongList(disstid) {
+//   const url = '/api/getSongList'
+//   const data = Object.assign({}, commonParams, {
+//     disstid,
+//     type: 1,
+//     json: 1,
+//     utf8: 1,
+//     onlysong: 0,
+//     platform: 'yqq',
+//     hostUin: 0,
+//     needNewCode: 0,
+//     g_tk: 67232076
+//   })
+//   return axios.get(url, {
+//     params: data
+//   }).then(res => {
+//     console.log('res',res)
+//     return Promise.resolve(res.data)
+//   })
+// }
+
+// export function getDiscList() {
+//   const url = '/api/getDiscList' //在webpack.dev.config启用了代理跨域
+//   // const url = 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg'
+//   const data = Object.assign({}, commonParams, {
+//     platform: 'yqq',
+//     hostUin: 0,
+//     sin: 0,
+//     ein: 29,
+//     sortId: 5,
+//     needNewCode: 0,
+//     categoryId: 10000000,
+//     rnd: Math.random(),
+//     format: 'json'
+//   })
+
+//   return axios.get(url, {
+//     params: data
+//   }).then((res) => {
+//     //成功后返回
+//     return Promise.resolve(res.data)
+//   })
+// }
+
+export function getSongList(disstid) {
+  const url = 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg'
+
+  const data = Object.assign({}, commonParams, {
+    disstid,
+    type: 1,
+    json: 1,
+    utf8: 1,
+    onlysong: 0,
+    platform: 'yqq',
+    hostUin: 0,
+    needNewCode: 0
+  })
+
+  return jsonp(url, data, {
+    param: 'jsonpCallback',
+    prefix: 'jp'
+  })
+}

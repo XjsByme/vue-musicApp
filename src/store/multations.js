@@ -30,6 +30,10 @@ const multations = {
         },
         [types.SET_CURRENT_INDEX](state, index) {
             state.currentIndex = index
+        },
+        //歌单详情部分
+        [types.SET_DISC](state, disc) {
+            state.disc = disc
         }
     }
     //暴露出来
