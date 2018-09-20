@@ -34,3 +34,5 @@ export const currentSong = (state) => {
 export const disc = (state) =>{
 	return state.disc
 }
+//排行榜
+export const topList = state => state.topList

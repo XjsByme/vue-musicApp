@@ -34,7 +34,11 @@ const multations = {
         //歌单详情部分
         [types.SET_DISC](state, disc) {
             state.disc = disc
-        }
+        },
+        //排行榜
+        [types.SET_TOP_LIST](state, topList) {
+            state.topList = topList
+        },
     }
     //暴露出来
 export default multations
