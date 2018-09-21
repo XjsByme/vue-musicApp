@@ -10,6 +10,7 @@ import MySearch from '@/components/MySearch/MySearch'
 import MySingerDetail from '@/components/MySingerDetail/MySingerDetail'
 //推荐页歌曲详情
 import Disc from '@/components/disc/disc'
+import TopList from '@/components/toplist/toplist'
 
 // import MySingerDetail from '@/components/MySingerDetail/MySingerDetail'
 // import MySongListDetail from '@/components/MySongListDetail/MySongListDetail'
@@ -54,7 +55,14 @@ export default new Router({
     {
       path: '/rank',
       name: 'rank',
-      component: MyRank
+      component: MyRank,
+      children:[
+        {
+          path: ':id',
+          name:'toplist',
+          component:TopList
+        }
+      ]
     },
     {
       path: '/search',

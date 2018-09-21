@@ -3,8 +3,9 @@
     <ul>
       <!-- 向外派发事件 -->
       <li class="item" v-for="(song, index) in songs" @click="selectItem(song, index)">
-        <div class="rank">
-          <span></span>
+        <!-- 排行 -->
+        <div class="rank" v-show="rank">
+          <span :class="getRankCls(index)" v-text="getRankText(index)"></span>
         </div>
         <div class="content">
           <p class="name">{{song.name}}</p>
@@ -22,6 +23,11 @@
         type: Array,
         default: []
       },
+      //排行
+      rank: {
+        type: Boolean,
+        default: false
+      }
     },
     methods: {
       getDesc(song) {
@@ -30,6 +36,18 @@
       selectItem(item,index){
         this.$emit('select', item, index)
         // console.log('index',index)
+      },
+      getRankCls(index){
+        if(index<=2){
+          return `icon icon${index}`
+        }else{
+          return 'text'
+        }
+      },
+      getRankText(index){
+        if (index > 2) {
+          return index + 1
+        }
       }
     }
   }

@@ -27,7 +27,7 @@
     <MyScroll class="list" :data="songs" ref="list" :listenScroll="listenScroll" :probeType="probeType" @scrollFun="scroll">
       <div class="song-list-wrapper">
         <!-- selectItem 事件派发 -->
-        <MySongList :songs="songs" @select="selectItem"></MySongList>
+        <MySongList :songs="songs" @select="selectItem" :rank="rank"></MySongList>
       </div>
       <!-- loding -->
       <div v-show="!songs.length" class="loading-container">
@@ -69,6 +69,10 @@ export default{
     title: {
       type: String,
       default: ''
+    },
+    rank:{
+      type:Boolean,
+      default:false
     }
   },
   data(){
