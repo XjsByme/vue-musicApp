@@ -5,7 +5,7 @@
 			<MySearchBox ref="searchBox" @query="onQueryChange"></MySearchBox>
 		</div>
     <!-- 搜索提示 -->
-		<div ref="shortcutWrapper" class="shortcut-wrapper">
+		<div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
 			<div ref="shortcut" class="shortcut">
 				<div class="hot-key">
 					<h1 class="title">热门搜索</h1>
@@ -18,7 +18,7 @@
 			</div>
 		</div>
     <!-- 搜索结果 -->
-    <div class="search-result" ref="searchResult">
+    <div class="search-result" ref="searchResult" v-show="query">
       <suggest :query="query"></suggest>
     </div>
 	</div>
