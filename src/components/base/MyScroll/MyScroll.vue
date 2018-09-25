@@ -80,7 +80,7 @@ export default {
       if (this.pullup) {
         this.scroll.on('scrollEnd', () => {
           if (this.scroll.y <= (this.scroll.maxScrollY + 50)) {
-            // 滑动到底部了
+            // 滑动到底部了-(上拉刷新)
             this.$emit('scrollToEnd')
           }
         })

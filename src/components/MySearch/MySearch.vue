@@ -21,8 +21,9 @@
     <div class="search-result" ref="searchResult" v-show="query">
       <suggest :query="query"></suggest>
     </div>
+    <!-- 路由跳转歌手详情页/歌曲详情页-搜索列表中 -->
+    <router-view></router-view>
 	</div>
-
 </template>
 <script type="text/ecmascript-6">
  import MySearchBox from 'base/MySearchBox/MySearchBox'
