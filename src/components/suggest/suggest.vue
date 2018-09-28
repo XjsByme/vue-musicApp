@@ -1,5 +1,5 @@
 <template>
-  <MyScroll class="suggest" ref="suggest" :data="result" :pullup="pullup" @scrollToEnd="searchMore" @beforeScroll="listScroll">
+  <MyScroll class="suggest" ref="suggest" :data="result" :pullup="pullup" @scrollToEnd="searchMore" @beforeScroll="listScroll" :beforeScroll="beforeScroll">
     <ul class="suggest-list">
       <li class="suggest-item" v-for="item in result" @click="selectItem(item)">
         <div class="icon" >
@@ -13,9 +13,9 @@
       <Myloading v-show="hasMore" :title="title"></Myloading>
     </ul>
     <!-- 没结果显示 -->
-    <!-- <div v-show="!hasMore && !result.length" class="no-result-wrapper">
-      <no-result title="抱歉，暂无搜索结果"></no-result>
-    </div> -->
+    <div v-show="!hasMore && !result.length" class="no-result-wrapper">
+      <MyNoResult title="抱歉，暂无搜索结果"></MyNoResult>
+    </div>
   </MyScroll>
 </template>
 <script type="text/ecmascript-6">
@@ -33,6 +33,8 @@ import Myloading from 'base/Myloading/Myloading'
 import Singer from 'common/js/SingerClass'
 //
 import {mapMutations, mapActions} from 'vuex'
+//暂无数据
+import MyNoResult from 'base/MyNoResult/MyNoResult'
 //公共变量
 const perpage = 20 //显示条数
 const TYPE_SINGER = 'singer'
@@ -40,7 +42,8 @@ const TYPE_SINGER = 'singer'
 export default{
   components:{
     MyScroll,
-    Myloading
+    Myloading,
+    MyNoResult
   },
   data(){
     return{
@@ -78,7 +81,8 @@ export default{
       getSearch(this.query, this.page, this.showSinger, perpage).then((res) => {
         if (res.code === ERR_OK) {
           this.result = this._genResult(res.data)
-
+          this.hasMore = false
+          // console.log('result',this.hasMore)
         }
       })
     },

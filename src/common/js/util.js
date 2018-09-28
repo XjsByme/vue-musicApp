@@ -47,7 +47,7 @@ function cloneArr(arr) {
     // slice(start,end) 方法可从已有的数组中返回选定的元素。
     return arr.slice(0)
 }
-
+//洗牌函数
 export function shuffle(arr, flag = false) {
     // console.log('arr',arr)
     let newArr = []
@@ -63,3 +63,23 @@ export function shuffle(arr, flag = false) {
 
     return newArr
 }
+
+
+/*
+*节流函数
+*/
+export function debounce(func, delay) {
+  let timer
+  //返回一个函数，并拿到参数
+  return function (...args) {
+    if (timer) {
+      clearTimeout(timer)
+    }
+    timer = setTimeout(() => {
+      func.apply(this, args)
+    }, delay)
+  }
+}
+
+
+

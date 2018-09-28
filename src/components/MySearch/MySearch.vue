@@ -19,7 +19,7 @@
 		</div>
     <!-- 搜索结果 -->
     <div class="search-result" ref="searchResult" v-show="query">
-      <suggest :query="query"></suggest>
+      <suggest :query="query" @listScroll="blurInput"></suggest>
     </div>
     <!-- 路由跳转歌手详情页/歌曲详情页-搜索列表中 -->
     <router-view></router-view>
@@ -62,6 +62,9 @@
       onQueryChange(query){
         this.query = query
         // console.log('this.query',this.query)
+      },
+      blurInput(){
+        this.$refs.searchBox.blur()
       }
     },
     watch:{

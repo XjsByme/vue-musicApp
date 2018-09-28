@@ -6,8 +6,8 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-  // import {debounce} from 'common/js/util'
-
+  //引入节流函数
+  import {debounce} from 'common/js/util'
   export default {
     props: {
       placeholder: {
@@ -28,17 +28,20 @@
         //等搜索列表快速选择的内容
         this.query = query
       },
+      //这个方法可以被MySearch组件直接调用到
       blur() {
         this.$refs.query.blur()
       }
     },
     created() {
-      // this.$watch('query', debounce((newQuery) => {
+      //这样会一触发一改变，就执行搜索请求接口-所以用下面的节流函数
+      // this.$watch('query',(newQuery)=>{
       //   this.$emit('query', newQuery)
-      // }, 200))
-      this.$watch('query',(newQuery)=>{
-        this.$emit('query', newQuery)
-      })
+      // })
+      //节流函数
+      this.$watch('query',debounce((newQuery)=>{
+          this.$emit('query', newQuery)
+      },200))
     }
   }
 </script>

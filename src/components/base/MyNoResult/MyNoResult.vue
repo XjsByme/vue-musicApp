@@ -1,5 +1,4 @@
 <!-- 无返回数据组件 -->
-
 <template>
   <div class="my-no-sesult">
     <div class="no-result-icon"></div>
