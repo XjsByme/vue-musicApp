@@ -138,6 +138,7 @@ export default{
         }
       })
     },
+    // 滚动前触发事件
     listScroll() {
       this.$emit('listScroll')
     },
@@ -163,7 +164,12 @@ export default{
       } else { //歌曲
         this.insertSong(item)
       }
+      //派发选择事件
       this.$emit('select', item)
+    },
+    // 给父亲用
+    refresh() {
+      this.$refs.suggest.refresh()
     },
     ...mapMutations({
       setSinger: 'SET_SINGER'

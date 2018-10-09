@@ -4,6 +4,7 @@
 import * as types from './multations-type.js'
 import { playMode } from 'common/js/config'
 import { shuffle } from '@/common/js/util.js'
+import {saveSearch, deleteSearch, clearSearch, savePlay, saveFavorite, deleteFavorite} from 'common/js/cache'
 
 function findIndexFun(list,song){
 	// console.log(list,song)
@@ -91,4 +92,28 @@ export const insertSong = function({commit, state},song){
 	commit(types.SET_CURRENT_INDEX, currentIndex)
 	commit(types.SET_FULL_SCREEN, true)
 	commit(types.SET_PLAYING_STATE, true)
+}
+
+/**
+ * 保存搜索历史
+ * @param  {[type]} query          搜索关键词
+ */
+export const saveSearchHistory = function ({commit}, query) {
+  commit(types.SET_SEARCH_HISTORY, saveSearch(query))
+}
+
+/**
+ * 删除单个搜索历史
+ * @param  {[type]} query          搜索关键词
+ */
+export const delHistory = function ({commit}, query) {
+  commit(types.SET_SEARCH_HISTORY, deleteSearch(query))
+}
+
+/**
+ * 删除全部搜索历史
+ * @param  {[type]} query          搜索关键词
+ */
+export const clearHistory = function ({commit}) {
+  commit(types.SET_SEARCH_HISTORY, clearSearch())
 }

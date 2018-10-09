@@ -39,6 +39,10 @@ const multations = {
         [types.SET_TOP_LIST](state, topList) {
             state.topList = topList
         },
+        //搜索历史列表
+        [types.SET_SEARCH_HISTORY](state, history) {
+            state.searchHistory = history
+        },
     }
     //暴露出来
 export default multations

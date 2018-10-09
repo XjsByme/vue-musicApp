@@ -1,12 +1,10 @@
 <!-- confirm 确认对话框 组件 -->
-
 <template>
   <transition name="confirm-fade">
     <div class="my-confirm" v-show="showFlag" @click.stop>
       <div class="confirm-wrapper">
         <div class="confirm-content">
           <p class="text">{{ text }}</p>
-
           <div class="operate">
             <div @click="confirm" class="operate-btn left">{{ confirmBtnText }}</div>
             <div @click="cancel" class="operate-btn">{{ cancelBtnText }}</div>

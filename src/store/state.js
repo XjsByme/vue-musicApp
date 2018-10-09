@@ -4,6 +4,7 @@
 */
 //播放模式设置
 import {playMode} from 'common/js/config'
+import {loadSearch, loadPlay, loadFavorite} from 'common/js/cache'
 
 const state = {
 	//-------------------------------------歌手部分
@@ -18,7 +19,9 @@ const state = {
     //-------------------------------------歌单部分
     disc:{}, //歌单对象
     //-------------------------------------排行榜
-    topList: {}
+    topList: {},
+    // searchHistory:[] //搜索历史
+    searchHistory: loadSearch()
 }
 export default state
 
