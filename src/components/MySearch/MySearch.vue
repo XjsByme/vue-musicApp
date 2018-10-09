@@ -64,6 +64,7 @@
         // console.log('this.query',this.query)
       },
       blurInput(){
+        //
         this.$refs.searchBox.blur()
       }
     },

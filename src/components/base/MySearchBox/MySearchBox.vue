@@ -30,6 +30,7 @@
       },
       //这个方法可以被MySearch组件直接调用到
       blur() {
+        //避免键盘遮挡，失去焦点
         this.$refs.query.blur()
       }
     },

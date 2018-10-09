@@ -49,7 +49,7 @@ export const randomPlay = function ({commit}, {list}) {
 
 //suggest相关
 export const insertSong = function({commit, state},song){
-	let playlist = state.playlist.slice()
+	let playlist = state.playlist.slice() //返回playlist
 	let sequenceList = state.sequenceList.slice()
 	let currentIndex = state.currentIndex
 	// 记录当前歌曲
@@ -72,9 +72,9 @@ export const insertSong = function({commit, state},song){
 	      playlist.splice(fpIndex + 1, 1)
 	    }
     }
-    let currentSIndex = findIndex(sequenceList, currentSong) + 1
+    let currentSIndex = findIndexFun(sequenceList, currentSong) + 1
 
-    let fsIndex = findIndex(sequenceList, song)
+    let fsIndex = findIndexFun(sequenceList, song)
 
     sequenceList.splice(currentSIndex, 0, song)
 
