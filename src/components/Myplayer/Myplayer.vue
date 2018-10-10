@@ -107,11 +107,14 @@
             <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
           </MyProgressCircle>
         </div>
-        <div class="control">
+
+        <div class="control"  @click.stop="showPlaylist">
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <!-- 迷你播放列表 -->
+    <MyplayList ref="playlistRef"></MyplayList>
     <!-- 播放功能 -->
     <!-- <audio src="http://dl.stream.qqmusic.qq.com/C1L0001ApDs72gYqUk.m4a?vkey=F33047F1591194F61A2B27094B6CB1CBBD4C504FDB466A9975ADE22861FE0845D36C70AA0E23FF9000B2D5DEE71EB63E904224A849A7C59F&guid=8715282750&uin=2703401268&fromtag=66" ref="audio">
     </audio> -->
@@ -138,6 +141,8 @@ import Lyric from 'lyric-parser'
 //滚动组件
 //scroll 引入
 import MyScroll from 'base/MyScroll/MyScroll'
+//迷你播放列表
+import MyplayList from 'components/MyplayList/MyplayList'
 
 const transform = prefixStyle('transform')
 
@@ -149,7 +154,9 @@ export default {
     //圆形进度条
     MyProgressCircle,
     //滚动
-    MyScroll
+    MyScroll,
+    //迷你播放列表
+    MyplayList
 	},
 	data(){
 		return{
@@ -559,6 +566,10 @@ export default {
       // 背景模糊
       this.$refs.middleL.style.opacity = opacity
       this.$refs.middleL.style[transitionduration] = '300ms'
+    },
+    //显示播放列表
+    showPlaylist(){
+      this.$refs.playlistRef.show()
     }
   },
   created(){

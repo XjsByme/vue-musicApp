@@ -5,7 +5,7 @@ import * as types from './multations-type.js'
 import { playMode } from 'common/js/config'
 import { shuffle } from '@/common/js/util.js'
 import {saveSearch, deleteSearch, clearSearch, savePlay, saveFavorite, deleteFavorite} from 'common/js/cache'
-
+//找到对应的id对应的歌曲的索引（返回的是一个索引）
 function findIndexFun(list,song){
 	// console.log(list,song)
 	return list.findIndex((item)=>{
@@ -116,4 +116,49 @@ export const delHistory = function ({commit}, query) {
  */
 export const clearHistory = function ({commit}) {
   commit(types.SET_SEARCH_HISTORY, clearSearch())
+}
+
+// 从播放列表中删除歌曲
+export const deleteSong = function ({commit, state}, song) {
+  let playlist = state.playlist.slice(0)
+  let sequenceList = state.sequenceList.slice(0)
+  let currentIndex = state.currentIndex
+
+  // 查询待删除的歌曲的索引
+  let pIndex = findIndexFun(playlist, song)
+  // console.log(playlist,song,pIndex)
+  //删除这首歌
+  playlist.splice(pIndex, 1)
+
+  // sequenceList 中的位置
+  let sIndex = findIndexFun(sequenceList, song)
+  //删除这首歌
+  sequenceList.splice(sIndex, 1)
+
+  if (currentIndex > pIndex || currentIndex === playlist.length) {
+    currentIndex--
+  }
+
+  commit(types.SET_PLAYLIST, playlist)
+  commit(types.SET_SEQUENCE_LIST, sequenceList)
+  commit(types.SET_CURRENT_INDEX, currentIndex)
+
+  if(!playlist.length){
+  	commit(types.SET_PLAYING_STATE, false)
+  }else{
+  	commit(types.SET_PLAYING_STATE, true)
+  }
+
+  let playingState = playlist.length > 0
+  commit(types.SET_PLAYING_STATE, playingState)
+}
+
+/*
+*deleteSongList 播放列表清除所有
+*/
+export const deleteSongList = function ({commit, state}, song) {
+  commit(types.SET_PLAYLIST, [])
+  commit(types.SET_SEQUENCE_LIST, [])
+  commit(types.SET_CURRENT_INDEX, -1)
+  commit(types.SET_PLAYING_STATE, false)
 }
