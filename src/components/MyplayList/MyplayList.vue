@@ -35,7 +35,7 @@
         </MyScroll>
         <!-- 播放队列 -->
         <div class="list-operate">
-          <div class="add">
+          <div class="add" @click="showAddSong">
             <i class="icon-add"></i>
             <span class="text">添加歌曲到队列</span>
           </div>
@@ -48,7 +48,7 @@
 
       <!-- 清空弹窗 -->
       <MyConfirm ref="confirmRef" @confirm="confirm" @cancel="cancel"></MyConfirm>
-      <!-- <my-add-song ref="addSongRef"></my-add-song> -->
+      <addSong ref="addSongRef"></addSong>
     </div>
   </transition>
 </template>
@@ -60,10 +60,13 @@ import {playMode} from 'common/js/config'
 import MyConfirm from 'base/MyConfirm/MyConfirm'
 //
 import { shuffle } from '@/common/js/util.js'
+//添加歌曲刀列表
+import addSong from 'components/addSong/addSong'
 export default{
 	components:{
     MyScroll,
-    MyConfirm
+    MyConfirm,
+    addSong
   },
   data(){
     return{
@@ -170,6 +173,9 @@ export default{
       })
       this.setCurrentIndex(index)
       this.setPlayList(newList)
+    },
+    showAddSong() {
+      this.$refs.addSongRef.show()
     },
     ...mapMutations({
       setMode: 'SET_PLAY_MODE',
