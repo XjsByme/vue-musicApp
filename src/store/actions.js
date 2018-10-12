@@ -162,3 +162,19 @@ export const deleteSongList = function ({commit, state}, song) {
   commit(types.SET_CURRENT_INDEX, -1)
   commit(types.SET_PLAYING_STATE, false)
 }
+
+/*
+*播放历史
+*/
+export const savePlayListHistory = function ({commit}, song) {
+  commit(types.SET_PLAY_LIST_HISTORY, savePlay(song))
+}
+
+// 我的收藏
+export const savefavoriteList = function ({commit}, song) {
+  commit(types.SET_FAVORITE_LIST, saveFavorite(song))
+}
+
+export const delfavoriteList = function ({commit}, song) {
+  commit(types.SET_FAVORITE_LIST, deleteFavorite(song))
+}

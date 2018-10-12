@@ -31,7 +31,7 @@ function insertArray(arr, val, compare, maxLen) {
     arr.pop()
   }
 }
-
+//删除
 function deleteFromArray(arr, compare) {
   const index = arr.findIndex(compare)
   if (index > -1) {
@@ -78,11 +78,11 @@ export function savePlay(song) {
   storage.set(PLAY_KEY, songs)
   return songs
 }
-
+//缓存了播放历史列表
 export function loadPlay() {
   return storage.get(PLAY_KEY, [])
 }
-
+//保存收藏列表
 export function saveFavorite(song) {
   let songs = storage.get(FAVORITE_KEY, [])
   insertArray(songs, song, (item) => {
@@ -91,7 +91,7 @@ export function saveFavorite(song) {
   storage.set(FAVORITE_KEY, songs)
   return songs
 }
-
+//删除收藏列表
 export function deleteFavorite(song) {
   let songs = storage.get(FAVORITE_KEY, [])
   deleteFromArray(songs, (item) => {

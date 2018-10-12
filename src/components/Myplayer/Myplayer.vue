@@ -78,7 +78,7 @@
             </div>
             <!-- 喜欢 -->
             <div class="icon i-right">
-              <i class="icon icon-not-favorite"></i>
+              <i class="icon" :class="getFavoriteCls(currentSong)" @click="toggleFavoriteCls(currentSong)"></i>
             </div>
           </div>
         </div>
@@ -123,7 +123,7 @@
   </div>
 </template>
 <script type="text/ecmascript-6">
-import { mapGetters,mapMutations } from 'vuex'
+import { mapGetters,mapMutations,mapActions } from 'vuex'
 //引用create-keyframe-animation 库，方便js中写动画函数
 import animations from 'create-keyframe-animation'
 //css3兼容写法各个浏览器
@@ -179,7 +179,8 @@ export default {
       'currentSong',//当前歌曲
       'playing',//播放/暂停
       'mode',//播放模式
-      'sequenceList'
+      'sequenceList',
+      'favoriteList'//收藏列表
   	]),
     /* 以下样式控制 在html 中直接判断也可以 */
     //播放暂停，开始
@@ -248,6 +249,7 @@ export default {
         setPlayList:'SET_PLAYLIST'
       }
     ),
+    ...mapActions(['savePlayListHistory', 'savefavoriteList', 'delfavoriteList']),
     // 最小化播放器
     back() {
       this.setfullScreen(false) //这是mapMutations里面的方法
@@ -394,7 +396,9 @@ export default {
     },
     //避免不能快速点击，报错
     ready(){
-      this.songReady = true
+      this.songReady = true,
+      //保存到播放历史列表
+      this.savePlayListHistory(this.currentSong)
     },
     //加载失败使用出问题，dom报错避免
     error(){
@@ -570,6 +574,31 @@ export default {
     //显示播放列表
     showPlaylist(){
       this.$refs.playlistRef.show()
+    },
+    //收藏点击样式切换
+    toggleFavoriteCls(song) {
+      if (this._isFavorite(song)) {
+        //收藏
+        this.delfavoriteList(song)
+      } else {
+        //取消收藏
+        this.savefavoriteList(song)
+      }
+    },
+    //收藏列表
+    getFavoriteCls(song) {
+      if (this._isFavorite(song)) {
+        return 'icon-favorite'
+      } else {
+        return 'icon-not-favorite'
+      }
+    },
+    //是否收藏
+    _isFavorite(song) {
+      let index = this.favoriteList.findIndex((item) => {
+        return song.id === item.id
+      })
+      return index > -1
     }
   },
   created(){

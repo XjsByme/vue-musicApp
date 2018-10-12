@@ -11,11 +11,8 @@ import MySingerDetail from '@/components/MySingerDetail/MySingerDetail'
 //推荐页歌曲详情
 import Disc from '@/components/disc/disc'
 import TopList from '@/components/toplist/toplist'
-
-// import MySingerDetail from '@/components/MySingerDetail/MySingerDetail'
-// import MySongListDetail from '@/components/MySongListDetail/MySongListDetail'
-// import MyRankDetail from '@/components/MyRankDetail/MyRankDetail'
-// import MyUser from '@/components/MyUser/MyUser'
+// 个人中心
+import MyUser from '@/components/Myuser/Myuser'
 
 //注册使用
 Vue.use(Router)
@@ -75,6 +72,12 @@ export default new Router({
           component: MySingerDetail
         }
       ]
+    },
+    // 个人中心
+    {
+      path:'/user',
+      name: 'user',
+      component: MyUser
     }
   ]
 })

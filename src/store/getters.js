@@ -38,3 +38,7 @@ export const disc = (state) =>{
 export const topList = state => state.topList
 //搜索历史
 export const searchHistory = state => state.searchHistory
+//播放历史
+export const playListHistory = state => state.playListHistory
+//收藏列表
+export const favoriteList = state => state.favoriteList

@@ -21,7 +21,11 @@ const state = {
     //-------------------------------------排行榜
     topList: {},
     // searchHistory:[] //搜索历史
-    searchHistory: loadSearch()
+    searchHistory: loadSearch(),
+    //播放历史(最近播放)
+    playListHistory:loadPlay(),
+    //收藏列表
+    favoriteList:loadFavorite()
 }
 export default state
 

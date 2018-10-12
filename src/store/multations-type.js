@@ -21,3 +21,7 @@ export const SET_DISC = 'SET_DISC'
 export const SET_TOP_LIST = 'SET_TOP_LIST'
 //搜索记录
 export const SET_SEARCH_HISTORY = 'SET_SEARCH_HISTORY'
+//播放历史
+export const SET_PLAY_LIST_HISTORY = 'SET_PLAY_LIST_HISTORY'
+//收藏列表
+export const SET_FAVORITE_LIST = 'SET_FAVORITE_LIST'

@@ -16,15 +16,15 @@
           </h1>
         </div>
         <!-- 中部列表 -->
-        <MyScroll ref="scrollRef" class="list-content" :data="sequenceList">
+        <MyScroll ref="scrollRef" class="list-content" :data="sequenceList" :refreshDelay="refreshDelay">
           <transition-group name="list" tag="ul">
             <li class="item" ref="listRef" v-for="(item, index) in sequenceList" @click="selectItem(item, index)" :key="item.id">
               <i class="current" :class="getCurrentIcon(item)"></i>
 
               <span class="text">{{ item.name }}</span>
-
-              <span class="like">
-                <i class="icon-not-favorite"></i>
+              <!-- @click.stop阻止冒泡 -->
+              <span class="like"  @click.stop="toggleFavoriteCls(item)">
+                <i :class="getFavoriteCls(item)"></i>
               </span>
 
               <span class="delete" @click.stop="deleteOne(item)">
@@ -70,7 +70,8 @@ export default{
   },
   data(){
     return{
-      showFlag: false
+      showFlag: false,
+      refreshDelay: 100
     }
   },
   props: {},
@@ -177,17 +178,38 @@ export default{
     showAddSong() {
       this.$refs.addSongRef.show()
     },
+    toggleFavoriteCls(song) {
+      if (this._isFavorite(song)) {
+        this.delfavoriteList(song)
+      } else {
+        this.savefavoriteList(song)
+      }
+    },
+    getFavoriteCls(song) {
+      if (this._isFavorite(song)) {
+        return 'icon-favorite'
+      } else {
+        return 'icon-not-favorite'
+      }
+    },
+     _isFavorite(song) {
+      let index = this.favoriteList.findIndex((item) => {
+        return song.id === item.id
+      })
+
+      return index > -1
+    },
     ...mapMutations({
       setMode: 'SET_PLAY_MODE',
       setCurrentIndex: 'SET_CURRENT_INDEX',
       setPlayingState: 'SET_PLAYING_STATE',
       setPlayList: 'SET_PLAYLIST'
     }),
-    ...mapActions(['deleteSong','deleteSongList']),
+    ...mapActions(['deleteSong','deleteSongList', 'savefavoriteList', 'delfavoriteList']),
   },
   filters:{},
   computed:{
-    ...mapGetters(['sequenceList','currentSong','mode','playlist']),
+    ...mapGetters(['sequenceList','currentSong','mode','playlist','favoriteList']),
     // 播放模式文案
     modeText() {
       // let mode = ''

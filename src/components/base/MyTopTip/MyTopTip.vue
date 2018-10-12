@@ -1,5 +1,4 @@
 <!-- 顶部提示 组件 -->
-
 <template>
   <transition name="drop">
     <div class="my-top-tip" v-show="showFlag" @click.stop="hide">

@@ -3,9 +3,9 @@
     <div class="icon"></div>
     <h1 class="text">Chicken Music</h1>
     <!-- 个人中心,to user 路由 -->
-    <!-- <router-link to="/user" class="mine" tag="div">
+    <router-link to="/user" class="mine" tag="div">
       <i class="icon-mine"></i>
-    </router-link> -->
+    </router-link>
   </div>
 </template>
 

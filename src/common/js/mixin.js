@@ -1,4 +1,4 @@
-import { mapGetters } from 'vuex'
+import { mapGetters,mapActions } from 'vuex'
 
 /*
 import { playlistMixin } from '@/common/js/mixin.js'
@@ -37,3 +37,34 @@ export const playlistMixin = {
     }
   }
 }
+
+
+/*
+*searchMixIn addSong组件中用到
+*/
+
+export const searchMixIn = {
+  computed:{
+    ...mapGetters(['sequenceList']),
+  },
+  methods:{
+    // 可以公用的方法
+    onQueryChange(query) {
+      this.query = query
+    },
+    blurInput() {
+      this.$refs.searchBox.blur()
+    },
+    addQuery(query) {
+      this.$refs.searchBox.setQuery(query)
+    },
+    saveSearch(){
+        this.saveSearchHistory(this.query)
+    },
+    ...mapActions([
+      'saveSearchHistory',
+      'delHistory'
+    ])
+  }
+}
+

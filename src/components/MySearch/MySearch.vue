@@ -6,7 +6,7 @@
 		</div>
     <!-- 搜索提示 -->
 		<div ref="shortcutWrapper" class="shortcut-wrapper" v-show="!query">
-			<MyScroll ref="shortcut" class="shortcut" :data="scrollData">
+			<MyScroll ref="shortcut" class="shortcut" :data="scrollData" :refreshDelay="refreshDelay">
         <!-- 多加个div才是MyScroll的高度，否则不能滚动 -->
         <div>
   				<div class="hot-key">
@@ -69,7 +69,8 @@ import { playlistMixin } from '@/common/js/mixin.js'
  		return{
  			hotKey:[],
       query:'',
-      text:'确认清空历史数据吗?'
+      text:'确认清空历史数据吗?',
+      refreshDelay: 100
  		}
  	},
   computed: {
