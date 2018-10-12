@@ -626,7 +626,8 @@ export default {
       //   this.getLyric()
       // })
       //实现从手机上从后台切换到前台播放
-      setTimeout(()=>{
+      clearTimeout(this.timer)
+      this.timer = setTimeout(()=>{
         this.$refs.audio.play()
         //歌词数据
         this.getLyric()
