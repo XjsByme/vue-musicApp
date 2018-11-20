@@ -54,6 +54,7 @@ export default {
   	//歌手列表
   	_getSingerList() {
         getSingerList().then((res) => {
+          // console.log('res',res)
           if (res.code === ERR_OK) {
           	this.singers = res.data.list
             this.singers = this._normalizeSinger(this.singers)

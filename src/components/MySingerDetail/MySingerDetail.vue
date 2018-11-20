@@ -9,7 +9,7 @@
 //拿到已经设置的 singer 
 import { mapGetters } from 'vuex'
 //歌手详情数据接口
-import { getSingerDetail } from 'api/getDateServer'
+import { getSingerDetail,getSongVkey } from 'api/getDateServer'
 //公共变量
 import {ERR_OK} from 'api/config'
 //createSong class 类引入
@@ -51,7 +51,6 @@ export default{
       //调用歌手详情接口获取数据
       getSingerDetail(this.singer.id).then((res) => {
         if (res.code === ERR_OK) {
-          // console.log('res.data.list',res.data.list)
           this.songs = this._formatSongs(res.data.list)
           // console.log(this.songs)
         }
@@ -64,10 +63,18 @@ export default{
         // console.log('item',item)
         // 解构赋值-拿到item 下的 musicData 列表数据
         let {musicData} = item
+        //-------------
+        getSongVkey(musicData.songmid).then((res) => {
+          const vkey = res.data.items[0].vkey;
+          if (musicData.songid && musicData.albummid) {
+            result.push(CreatSong(musicData, vkey))
+          }
+        })
+        //-------------
         // console.log('musicData',musicData)
-        if(musicData.songid && musicData.albummid){
-          result.push(CreatSong(musicData))
-        }
+        // if(musicData.songid && musicData.albummid){
+        //   result.push(CreatSong(musicData))
+        // }
       })
       return result
     }
