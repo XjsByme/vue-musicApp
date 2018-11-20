@@ -63,7 +63,7 @@ export default{
         // console.log('item',item)
         // 解构赋值-拿到item 下的 musicData 列表数据
         let {musicData} = item
-        //-------------
+        //------------- 更新的加上vkey
         getSongVkey(musicData.songmid).then((res) => {
           const vkey = res.data.items[0].vkey;
           if (musicData.songid && musicData.albummid) {
